@@ -15,8 +15,11 @@ class Distrito(models.Model):
 
 
 class Subprefeitura(models.Model):
-    codigo = models.IntegerField(u"Código", primary_key=True,
-                                 help_text="Código de cada uma das 31 Subprefeituras (2003 a 2012)")
+    codigo = models.IntegerField(
+        u"Código",
+        primary_key=True,
+        help_text="Código de cada uma das 31 Subprefeituras (2003 a 2012)"
+    )
     nome = models.CharField(u"Nome", max_length=25, help_text="Nome da Subprefeitura (31 de 2003 até 2012)")
 
     def __unicode__(self):
@@ -24,6 +27,10 @@ class Subprefeitura(models.Model):
 
 
 class Feira(models.Model):
+    id = models.IntegerField(
+        u"ID",
+        primary_key=True,
+        help_text=u"Número de identificação do estabelecimento georreferenciado por SMDU/Deinfo")
     longitude = models.CharField(
         u"Longitude",
         max_length=10,
@@ -65,6 +72,8 @@ class Feira(models.Model):
     bairro = models.CharField(u"Bairro", max_length=20, help_text=u"Bairro de localização da feira livre")
     referencia = models.CharField(
         u"Ponto de referência",
+        blank=True,
+        null=True,
         max_length=24,
         help_text=u"Ponto de referência da localização da feira livre"
     )
