@@ -57,24 +57,35 @@ def feira(request, id):
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
     except (DadosInvalidos, Exception) as erro:
-    # except DadosInvalidos as erro:
         return status_response(500, unicode(erro))
 
 
 def feiras_busca(request):
     try:
         validar_metodo(request.method, ["GET"])
+        return feiras_filter(request)
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
+    except (DadosInvalidos, Exception) as erro:
+        return status_response(500, unicode(erro))
+
 
 def feiras_filter(request):
-    pass
+    operador = operator.or_ if request.GET.get("operador", "and") == "or" else operator.and_
+    filtros = filtros_compostos(request.GET, operador)
+    return feira_get(Feira.objects.filter(filtros))
 
 
-def filtros_compostos(filtros, operacao):
+def filtros_compostos(filtros, operador):
     q_list = [Q((CAMPOS_BUSCA[filtro] + "__contains", valor))
               for filtro, valor in filtros.iteritems() if filtro in CAMPOS_BUSCA]
-    return reduce(operacao, q_list)
+    try:
+        return reduce(operador, q_list)
+    except TypeError:
+        raise DadosInvalidos(
+            u"Parâmetros de busca incorretos ou não definidos. "
+            u"Campos disponiveis para busca: " + ", ".join([c for c in CAMPOS_BUSCA])
+        )
 
 
 def adicionar_feira(request):
