@@ -1,6 +1,7 @@
 # coding=utf-8
 import json
 
+from django.db.models import QuerySet
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
@@ -8,20 +9,9 @@ from .models import Distrito, Subprefeitura, Feira
 
 # Create your views here.
 
+MENSAGEM_404 = u"O ID solicitado não existe no cadastro de feiras"
 CAMPOS_OBRIGATORIOS = [
-    "longitude",
-    "latitude",
-    "setor_censitario",
-    "area_ponderacao",
-    "distrito_id",
-    "subprefeitura_id",
-    "regiao_5",
-    "regiao_8",
-    "nome",
-    "registro",
-    "logradouro",
-    "numero",
-    "bairro",
+    f.name + ("_id" if f.is_relation else "") for f in Feira._meta.fields if f.name != "id" and not f.null
 ]
 
 
@@ -38,25 +28,28 @@ def feiras(request):
     try:
         validar_metodo(request.method, ["GET", "POST"])
         if request.method == "POST":
-            return feira_get(adicionar_feira(request))
-        return JsonResponse(serializar_feiras(Feira.objects.all()))
+            return feira_get_id(request, adicionar_feira(request).id)
+        return feira_get(Feira.objects.all())
+    except Feira.DoesNotExist:
+        return status_response(404, MENSAGEM_404)
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
-    except DadosInvalidos as erro:
-        return error_response(500, unicode(erro))
+    except (DadosInvalidos, Exception) as erro:
+        return status_response(500, unicode(erro))
 
 
 @csrf_exempt
 def feira(request, id):
     try:
-        validar_metodo(request.method, ["GET", "DELETE", "PUT"])
-        return feira_get(Feira.objects.get(id=id))
+        validar_metodo(request.method, ["GET", "DELETE", "PUT", "PATCH"])
+        return metodos[request.method](request, id)
     except Feira.DoesNotExist:
-        return error_response(404, u"O ID informado não existe no cadastro de feiras")
+        return status_response(404, MENSAGEM_404)
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
+    # except (DadosInvalidos, Exception) as erro:
     except DadosInvalidos as erro:
-        return error_response(500, unicode(erro))
+        return status_response(500, unicode(erro))
 
 
 def adicionar_feira(request):
@@ -106,21 +99,58 @@ def validar_id(post_body):
     raise DadosInvalidos(u"O id informado já existe no cadastro de feiras")
 
 
-def validar_campo_relacionado(post_body, campo, model_class):
-    campo_nome = campo + "_nome"
-    codigo = int(post_body.get(campo + "_id"))
+def feira_put_id(request, id):
+    return feira_patch_id(request, id)
 
-    if not post_body.get(campo_nome):
+
+def feira_patch_id(request, id):
+    feira_obj = Feira.objects.get(id=id)
+    alteracoes = alteracoes_validas(json.loads(request.body), id)
+    return feira_patch(request, feira_obj, alteracoes)
+
+
+def feira_patch(request, feira_obj, alteracoes):
+    for campo, valor in alteracoes.iteritems():
+        if campo not in CAMPOS_OBRIGATORIOS or valor is not None:
+            setattr(feira_obj, campo, valor)
+    feira_obj.save()
+    return feira_get_id(None, feira_obj.id)
+
+
+def alteracoes_validas(alteracoes, id):
+    return validar_campo_relacionado(
+        validar_campo_relacionado(
+            alteracoes_id_valido(
+                alteracoes, id
+            ), "distrito", Distrito
+        ), "subprefeitura", Subprefeitura
+    )
+
+
+def alteracoes_id_valido(alteracoes, id):
+    novo_id = alteracoes.get("id")
+    if novo_id and (int(novo_id) != int(id)):
+        raise DadosInvalidos(u"Campo id não pode ser alterado: {} => {}".format(id, novo_id))
+    return alteracoes
+
+
+def validar_campo_relacionado(campos, campo, model_class):
+    campo_nome = campo + "_nome"
+    codigo = campos.get(campo + "_id")
+    if not codigo:
+        return campos
+
+    if not campos.get(campo_nome):
         validar_codigo_relacionado(campo, model_class, codigo)
-        return post_body
+        return campos
 
     try:
-        model_class.objects.get_or_create(codigo=codigo, nome=post_body.get(campo_nome))
+        model_class.objects.get_or_create(codigo=codigo, nome=campos.get(campo_nome))
     except IntegrityError:
         raise DadosInvalidos(u"Já existe {} código {} com nome diferente do informado".format(campo, codigo))
 
-    del(post_body[campo_nome])
-    return post_body
+    del(campos[campo_nome])
+    return campos
 
 
 def validar_codigo_relacionado(campo, model_class, codigo):
@@ -130,8 +160,20 @@ def validar_codigo_relacionado(campo, model_class, codigo):
         raise DadosInvalidos(u"O código informado para {} não existe".format(campo))
 
 
-def feira_get(feira_obj):
-    return JsonResponse(serializar_feiras([feira_obj]))
+def feira_get_id(request, id):
+    return feira_get(Feira.objects.get(id=id))
+
+
+def feira_get(objeto_ou_lista):
+    t = type(objeto_ou_lista)
+    lista = objeto_ou_lista if t == list or t == QuerySet else [objeto_ou_lista]
+    return JsonResponse(serializar_feiras(lista))
+
+
+def feira_delete_id(request, id):
+    feira_obj = Feira.objects.get(id=id)
+    feira_obj.delete()
+    return status_response(200, u"Feira {} removida com sucesso".format(id))
 
 
 def serializar_feiras(feiras_list):
@@ -157,11 +199,19 @@ def validar_metodo(metodo, permitidos):
 
 
 def metodo_nao_permitido(erro):
-    return error_response(405, unicode(erro))
+    return status_response(405, unicode(erro))
 
 
-def error_response(status, message):
+def status_response(status, message):
     return JsonResponse({
         "status": status,
         "message": message,
     }, status=status)
+
+
+metodos = {
+    "GET": feira_get_id,
+    "DELETE": feira_delete_id,
+    "PUT": feira_put_id,
+    "PATCH": feira_patch_id,
+}
