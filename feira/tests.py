@@ -3,4 +3,4 @@
 
 from feira.tests_modules.feiras_tests import FeirasTestes
 from feira.tests_modules.feira_tests import FeiraTestes
-
+from feira.tests_modules.feiras_busca_tests import FeirasBuscaTestes

@@ -22,6 +22,9 @@ CAMPOS_BUSCA = {
     "nome": "nome",
     "bairro": "bairro",
 }
+MENSAGEM_BUSCA_INVALIDA = u"Parâmetros de busca incorretos ou não definidos. " \
+                          u"Campos disponiveis para busca: " + ", ".join([c for c in CAMPOS_BUSCA])
+
 
 
 class MetodoNaoPermitido(Exception):
@@ -82,10 +85,7 @@ def filtros_compostos(filtros, operador):
     try:
         return reduce(operador, q_list)
     except TypeError:
-        raise DadosInvalidos(
-            u"Parâmetros de busca incorretos ou não definidos. "
-            u"Campos disponiveis para busca: " + ", ".join([c for c in CAMPOS_BUSCA])
-        )
+        raise DadosInvalidos(MENSAGEM_BUSCA_INVALIDA)
 
 
 def adicionar_feira(request):

@@ -4,8 +4,6 @@ from django.urls import reverse
 from feira.tests_modules.helpers import post_as_json, get_response_content
 from feira.tests_data.feiras_data import test_data
 
-# Create your tests here.
-
 
 class FeirasTestes(TestCase):
     """Testes do endpoint /feiras/"""
