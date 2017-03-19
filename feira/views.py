@@ -1,7 +1,8 @@
 # coding=utf-8
 import json
+import operator
 
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
@@ -10,9 +11,17 @@ from .models import Distrito, Subprefeitura, Feira
 # Create your views here.
 
 MENSAGEM_404 = u"O ID solicitado não existe no cadastro de feiras"
+
 CAMPOS_OBRIGATORIOS = [
     f.name + ("_id" if f.is_relation else "") for f in Feira._meta.fields if f.name != "id" and not f.null
 ]
+
+CAMPOS_BUSCA = {
+    "distrito": "distrito__nome",
+    "regiao_5": "regiao_5",
+    "nome": "nome",
+    "bairro": "bairro",
+}
 
 
 class MetodoNaoPermitido(Exception):
@@ -47,9 +56,25 @@ def feira(request, id):
         return status_response(404, MENSAGEM_404)
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
-    # except (DadosInvalidos, Exception) as erro:
-    except DadosInvalidos as erro:
+    except (DadosInvalidos, Exception) as erro:
+    # except DadosInvalidos as erro:
         return status_response(500, unicode(erro))
+
+
+def feiras_busca(request):
+    try:
+        validar_metodo(request.method, ["GET"])
+    except MetodoNaoPermitido as erro:
+        return metodo_nao_permitido(erro)
+
+def feiras_filter(request):
+    pass
+
+
+def filtros_compostos(filtros, operacao):
+    q_list = [Q((CAMPOS_BUSCA[filtro] + "__contains", valor))
+              for filtro, valor in filtros.iteritems() if filtro in CAMPOS_BUSCA]
+    return reduce(operacao, q_list)
 
 
 def adicionar_feira(request):
