@@ -25,16 +25,21 @@ SECRET_KEY = 'qj%c$m5hyb$i)1r+%clsi&(l6v-3%@n-c0!j!)2o5^nxahkxg2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # django
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
 
+    # dev
+    'django_extensions',
+
+    # project
     'feira',
 ]
 
@@ -63,6 +68,14 @@ TEMPLATES = [
     },
 ]
 """
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 WSGI_APPLICATION = 'feiras_livres.wsgi.application'
 

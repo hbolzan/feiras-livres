@@ -27,7 +27,7 @@ class Subprefeitura(models.Model):
 
 
 class Feira(models.Model):
-    id = models.IntegerField(
+    id = models.AutoField(
         u"ID",
         primary_key=True,
         help_text=u"Número de identificação do estabelecimento georreferenciado por SMDU/Deinfo")

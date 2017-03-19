@@ -4,3 +4,6 @@ djangorestframework==3.6.2
 packaging==16.8
 pyparsing==2.2.0
 six==1.10.0
+djangorestframework==3.6.2
+Markdown==2.6.8
+django-filter==1.0.1
