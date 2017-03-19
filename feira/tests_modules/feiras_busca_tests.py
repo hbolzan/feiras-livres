@@ -1,7 +1,5 @@
 # coding=utf-8
-from django.conf import settings
-from django.test import TestCase, RequestFactory, Client
-from django.test.utils import override_settings
+from django.test import TestCase, Client
 from django.urls import reverse
 from feira.tests_modules.helpers import post_as_json, get_response_content
 from feira.tests_data.feiras_busca_data import test_data
@@ -10,12 +8,6 @@ from feira.views import MENSAGEM_BUSCA_INVALIDA
 
 class FeirasBuscaTestes(TestCase):
     """Testes do endpoint /feiras/busca/"""
-
-    @override_settings(DEBUG=True)
-    def test_debug(self):
-        assert settings.DEBUG
-
-    @override_settings(DEBUG=True)
     def settings(self, **kwargs):
         self.client = Client()
 
