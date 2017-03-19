@@ -35,8 +35,8 @@ class DadosInvalidos(Exception):
 @csrf_exempt
 def feiras(request):
     try:
-        validar_metodo(request.method, ["GET", "POST"])
-        if request.method == "POST":
+        metodo = metodo_valido(request.method, ["GET", "POST"])
+        if metodo == "POST":
             return feira_get_id(request, adicionar_feira(request).id)
         return feira_get(Feira.objects.all())
     except Feira.DoesNotExist:
@@ -50,8 +50,8 @@ def feiras(request):
 @csrf_exempt
 def feira(request, id):
     try:
-        validar_metodo(request.method, ["GET", "DELETE", "PUT", "PATCH"])
-        return metodos[request.method](request, id)
+        metodo = metodo_valido(request.method, ["GET", "DELETE", "PUT", "PATCH"])
+        return metodos[metodo](request, id)
     except Feira.DoesNotExist:
         return status_response(404, MENSAGEM_404)
     except MetodoNaoPermitido as erro:
@@ -62,7 +62,7 @@ def feira(request, id):
 
 def feiras_busca(request):
     try:
-        validar_metodo(request.method, ["GET"])
+        metodo_valido(request.method, ["GET"])
         return feiras_filter(request)
     except MetodoNaoPermitido as erro:
         return metodo_nao_permitido(erro)
@@ -229,9 +229,10 @@ def feira_to_dict(feira_obj):
     )
 
 
-def validar_metodo(metodo, permitidos):
+def metodo_valido(metodo, permitidos):
     if metodo not in permitidos:
         raise MetodoNaoPermitido(u"O método {} não é permitido para este recurso".format(metodo))
+    return metodo
 
 
 def metodo_nao_permitido(erro):

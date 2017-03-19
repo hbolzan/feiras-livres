@@ -1,3 +1,6 @@
-from django.test import TestCase
+# coding=utf-8
+# chamadas para todos os test cases no módulo tests_module
 
-# Create your tests here.
+from feira.tests_modules.feiras_tests import FeirasTestes
+from feira.tests_modules.feira_tests import FeiraTestes
+
