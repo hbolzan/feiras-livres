@@ -100,3 +100,5 @@ Pesquisa na tabela de feiras. Pesquisas podem ser feitas pelos campos `distrito`
    ```
    /api/v1.0/feiras/busca/?parametros
    ```
+#### Métodos   
+* __GET__: retorna os dados filtrados conforme parâmetros da URL.
