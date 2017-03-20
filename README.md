@@ -4,7 +4,7 @@ API REST para manipulção e pesquisa de dados sobre feiras livres de São Paulo
 ## Apresentação
 Esta API foi desenvolvida em Python com Django Framework, sem utilização do REST Framework. O desenvolvimento e os testes foram feitos em um Linux box com Ubuntu 16.10. As instruções a seguir presumem a instalação em um sistema operacional Linux mas devem servir igualmente para instalação em MacOS e outros UNIX'es.
 
-O banco de dados relacional escolhido para este projeto foi SQLite3 devido à facilidade de uso (não exige instalação de servidor). Porém, ele pode facilmente ser substituído por outro banco, já que todo acesso aos dados é feito através do ORM do Django.
+O banco de dados relacional escolhido para este projeto foi o SQLite3 devido à facilidade de uso (não exige instalação de servidor). Porém, ele pode facilmente ser substituído por outro banco, já que o acesso aos dados é feito através do ORM do Django.
 
 ## Pré requisitos
 * python 2.7
