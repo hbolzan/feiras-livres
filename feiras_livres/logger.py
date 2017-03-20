@@ -10,20 +10,18 @@ class LogsJsonFormatter(Formatter):
         super(LogsJsonFormatter, self).__init__()
 
     def format(self, record):
-        if not record.args:
-            data = self.get_middleware_data(record)
-        else:
-            data = self.get_logger_data(record)
+        try:
+            if not record.args:
+                data = self.get_middleware_data(record)
+            else:
+                data = self.get_logger_data(record)
+        except:
+            return ""
 
         if data:
             return json.dumps(data)
 
     def get_logger_data(self, record):
-        try:
-            args = record.args[0].split(' ')
-        except:
-            return
-
         return {
             "severity": record.levelname,
             "method": args[0],
