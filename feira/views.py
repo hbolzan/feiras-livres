@@ -26,7 +26,6 @@ MENSAGEM_BUSCA_INVALIDA = u"Parâmetros de busca incorretos ou não definidos. "
                           u"Campos disponiveis para busca: " + ", ".join([c for c in CAMPOS_BUSCA])
 
 
-
 class MetodoNaoPermitido(Exception):
     pass
 
