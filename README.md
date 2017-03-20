@@ -102,3 +102,7 @@ Pesquisa na tabela de feiras. Pesquisas podem ser feitas pelos campos `distrito`
    ```
 #### Métodos   
 * __GET__: retorna os dados filtrados conforme parâmetros da URL.
+
+
+## Mais informações
+Detalhes adicionais, informações sobre os recursos e exemplos de uso: https://github.com/hbolzan/feiras-livres/wiki
