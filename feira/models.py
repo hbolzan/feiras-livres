@@ -77,3 +77,4 @@ class Feira(models.Model):
         max_length=24,
         help_text=u"Ponto de referência da localização da feira livre"
     )
+
