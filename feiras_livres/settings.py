@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from feiras_livres.logger import LogstashFormatter
+from feiras_livres.logger import LogsJsonFormatter
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -141,7 +141,7 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
         'json': {
-            '()': LogstashFormatter,
+            '()': LogsJsonFormatter,
         }
     },
     'handlers': {
