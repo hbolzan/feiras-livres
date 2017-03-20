@@ -75,6 +75,8 @@ Para gerar o relatório de cobertura de testes, utilize o módulo `coverage` que
    $ coverage report
    ```
 
+## Logs estruturados
+A aplicação gera um arquivo texto de log em formato JSON em `log/feiras.log`.
 
 ## Recursos
 ### /feiras/
