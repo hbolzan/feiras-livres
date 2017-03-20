@@ -77,7 +77,7 @@ Para gerar o relatório de cobertura de testes, utilize o módulo `coverage` que
 
 
 ## Recursos
-### feiras
+### /feiras/
    ```
    /api/v1.0/feiras/
    ```
@@ -85,7 +85,7 @@ Para gerar o relatório de cobertura de testes, utilize o módulo `coverage` que
 * __GET__: retorna a tabela completa de feiras
 * __POST__: adiciona uma feira
 
-### feiras/:id
+### /feiras/:id/
    ```
    /api/v1.0/feiras/:id/
    ```
@@ -95,3 +95,8 @@ Para gerar o relatório de cobertura de testes, utilize o módulo `coverage` que
 * __PATCH__: altera dados da feira identificada por :id
 * __PUT__: altera dados da feira identificada por :id 
 
+### /feiras/busca/
+Pesquisa na tabela de feiras. Pesquisas podem ser feitas pelos campos `distrito`, `regiao_5`, `nome` e `bairro`.
+   ```
+   /api/v1.0/feiras/busca/?parametros
+   ```
