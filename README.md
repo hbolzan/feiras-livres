@@ -22,7 +22,7 @@ O banco de dados relacional escolhido para este projeto foi o SQLite3 devido à 
 
 2. Clone o projeto no github e mude para o diretório do projeto
    ```
-   $ git clone git@github.com:hbolzan/feiras-livres.git
+   $ git clone https://github.com/hbolzan/feiras-livres.git
    $ cd feiras-livres
    ```
 
